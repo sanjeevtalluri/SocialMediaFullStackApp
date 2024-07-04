@@ -1,5 +1,6 @@
 import { Component, EventEmitter, inject, OnInit, output, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 import { AccountService } from '../services/account.service';
 
 @Component({
@@ -14,6 +15,7 @@ export class RegisterComponent implements OnInit {
   model: any = {};
 
   private accountService= inject(AccountService);
+  private toastr = inject(ToastrService);
 
   ngOnInit(): void {
   }
@@ -26,6 +28,7 @@ export class RegisterComponent implements OnInit {
       },
       error:(err)=>{
         console.log(err);
+        this.toastr.error(err.error);
       }
     });
   }
