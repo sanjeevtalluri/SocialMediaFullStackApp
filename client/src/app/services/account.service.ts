@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { map } from 'rxjs';
+import { environment } from '../../environments/environment';
 import { User } from '../models/user';
 
 @Injectable({
@@ -9,10 +10,11 @@ import { User } from '../models/user';
 export class AccountService {
 
   private http = inject(HttpClient);
-  baseUrl = 'https://localhost:5001/api/';
+  baseUrl = environment.apiUrl;
   currentUser = signal<User|null>(null);
   constructor() { }
   login(model:any){
+    
     return this.http.post<User>(this.baseUrl+'account/login',model).pipe(
       map((user)=>{
         if(user){
@@ -30,6 +32,7 @@ export class AccountService {
     this.currentUser.set(null);
   }
   register(model:any){
+    console.log(this.baseUrl);
     return this.http.post<User>(this.baseUrl+'account/register',model).pipe(
       map((user)=>{
         if(user){

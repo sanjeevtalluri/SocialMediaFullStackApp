@@ -1,0 +1,55 @@
+.img-thumbnail {
+    margin: 25px;
+    width: 85%;
+    height: 85%;
+}
+
+.card-body {
+    padding: 0 25px;
+}
+
+.card-footer {
+    padding: 10px 15px;
+    background-color: #fff;
+    border-top: none;
+}
+
+
+.slider-container {
+    position: relative;
+    max-width: 100%;
+    margin: auto;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .slide-image {
+    width: 50%;
+    height: 50%;
+    transition: transform 0.5s ease-in-out;
+  }
+  
+  .nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 2;
+  }
+  
+  .nav-btn:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+  
+  .nav-btn:first-of-type {
+    left: 0;
+  }
+  
+  .nav-btn:last-of-type {
+    right: 0;
+  }
