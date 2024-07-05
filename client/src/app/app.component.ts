@@ -4,13 +4,14 @@ import { RouterOutlet, TitleStrategy } from '@angular/router';
 import { NavComponent } from "./nav/nav.component";
 import { AccountService } from './services/account.service';
 import { HomeComponent } from "./home/home.component";
+import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
 
 @Component({
     selector: 'app-root',
     standalone: true,
     templateUrl: './app.component.html',
     styleUrl: './app.component.css',
-    imports: [RouterOutlet, NgFor, NavComponent, HomeComponent]
+    imports: [RouterOutlet, NgFor, NavComponent, HomeComponent,LoadingSpinnerComponent]
 })
 export class AppComponent implements OnInit {
   ngOnInit(): void {
