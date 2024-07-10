@@ -1,20 +1,19 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { map } from 'rxjs';
+import { map, of, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Member } from '../models/member';
-import { AccountService } from './account.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MembersService {
   private http = inject(HttpClient);
-  private accountService = inject(AccountService);
   baseUrl = environment.apiUrl;
   members: Member[] = [];
   constructor() { }
   getMembers() {
+    if (this.members.length > 0) return of(this.members);
     return this.http.get<Member[]>(this.baseUrl + 'users').pipe(
       map(users=>{
         this.members = users;
@@ -24,12 +23,15 @@ export class MembersService {
   }
 
   getMember(username: string) {
+    const member = this.members.find(x => x.username === username);
+    console.log(member);
+    if (member !== undefined) return of(member);
     return this.http.get<Member>(this.baseUrl + 'users/' + username);
   }
 
   updateMember(member:Member){
     return this.http.put<Member>(this.baseUrl+'users',member).pipe(
-      map(()=>{
+      tap(()=>{
         const index = this.members.indexOf(member);
         this.members[index] = member;
       })
