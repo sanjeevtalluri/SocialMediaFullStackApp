@@ -8,6 +8,7 @@ import { Member } from '../models/member';
   providedIn: 'root'
 })
 export class MembersService {
+
   private http = inject(HttpClient);
   baseUrl = environment.apiUrl;
   members: Member[] = [];
@@ -38,4 +39,11 @@ export class MembersService {
     )
   }
 
+  setMainPhoto(id: number) {
+    return this.http.put<Member>(this.baseUrl+'users/set-main-photo/'+id,{});
+  }
+
+  deletePhoto(photoId: number) {
+    return this.http.delete(this.baseUrl + 'users/delete-photo/' + photoId);
+  }
 }

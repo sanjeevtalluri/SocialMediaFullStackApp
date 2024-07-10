@@ -6,13 +6,14 @@ import { ToastrService } from 'ngx-toastr';
 import { Member } from '../../models/member';
 import { AccountService } from '../../services/account.service';
 import { MembersService } from '../../services/members.service';
+import { PhotoEditorComponent } from "../photo-editor/photo-editor.component";
 
 @Component({
-  selector: 'app-member-edit',
-  standalone: true,
-  imports: [FormsModule,NgIf,TabsModule],
-  templateUrl: './member-edit.component.html',
-  styleUrl: './member-edit.component.css'
+    selector: 'app-member-edit',
+    standalone: true,
+    templateUrl: './member-edit.component.html',
+    styleUrl: './member-edit.component.css',
+    imports: [FormsModule, NgIf, TabsModule, PhotoEditorComponent]
 })
 export class MemberEditComponent implements OnInit {
   @ViewChild('editForm') editForm?: NgForm;
@@ -43,5 +44,9 @@ export class MemberEditComponent implements OnInit {
       this.toastr.success('Profile updated successfully');
       this.editForm?.reset(this.member);
     })
+  }
+
+  onMemberChange(event:any){
+    this.member = event;
   }
 }
