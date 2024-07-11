@@ -13,6 +13,7 @@ import { ToastrService } from 'ngx-toastr';
 import { AccountService } from '../services/account.service';
 import { TextInputComponent } from '../forms/text-input/text-input.component';
 import { DatePickerComponent } from "../forms/date-picker/date-picker.component";
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-register',
@@ -33,10 +34,12 @@ export class RegisterComponent implements OnInit {
   model: any = {};
   registerForm!: FormGroup;
   maxDate: Date = new Date();
+  validationErrors:string[] = [];
 
   private accountService = inject(AccountService);
   private toastr = inject(ToastrService);
   private fb = inject(FormBuilder);
+  private router = inject(Router);
 
   ngOnInit(): void {
     this.intitializeForm();
@@ -76,19 +79,28 @@ export class RegisterComponent implements OnInit {
   }
 
   register() {
-    this.accountService.register(this.model).subscribe({
+    const dob = this.getDateOnly(this.registerForm.get('dateOfBirth')?.value);
+    this.registerForm.patchValue({
+      dateOfBirth:dob
+    })
+    this.accountService.register(this.registerForm.value).subscribe({
       next: (user) => {
         console.log(user);
-        this.cancel();
+        this.router.navigateByUrl('/members');
       },
       error: (err) => {
         console.log(err);
-        this.toastr.error(err.error);
+        this.validationErrors = err;
       },
     });
   }
 
   cancel() {
     this.cancelRegister.emit(false);
+  }
+
+  getDateOnly(dob:string | undefined){
+    if(!dob) return;
+    return new Date(dob).toISOString().slice(0,10);
   }
 }
