@@ -12,5 +12,7 @@ namespace API.Dtos
 
         public string? PhotoUrl { get; set; }
         public string? KnownAs { get; set; }
+
+        public required string Gender { get; set; }
     }
 }

@@ -4,6 +4,7 @@ import { map, of, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Member } from '../models/member';
 import { PaginatedResult } from '../models/pagination';
+import { UserParams } from '../models/userParams';
 
 @Injectable({
   providedIn: 'root'
@@ -14,17 +15,12 @@ export class MembersService {
   baseUrl = environment.apiUrl;
   paginatedResult= signal<PaginatedResult<Member[]> | null>(null);
   constructor() { }
-  getMembers(pageNumber?:number,pageSize?:number) {
-    let params = {
-      pageNumber:1,
-      pageSize:10
-    };
-    if(pageNumber){
-      params.pageNumber=pageNumber;
-    }
-    if(pageSize){
-      params.pageSize = pageSize;
-    }
+  getMembers(userParams:UserParams) {
+    let params = this.getPaginationHeaders(userParams.pageNumber,userParams.pageSize);
+    params.minAge = userParams.minAge;
+    params.maxAge = userParams.maxAge;
+    params.gender = userParams.gender;
+    params.orderBy = userParams.orderBy;
     return this.http.get<Member[]>(this.baseUrl + 'users', {
       params: params,
       observe: 'response'
@@ -60,5 +56,23 @@ export class MembersService {
 
   deletePhoto(photoId: number) {
     return this.http.delete(this.baseUrl + 'users/delete-photo/' + photoId);
+  }
+
+  private getPaginationHeaders(pageNumber: number, pageSize: number) {
+    let params = {
+      pageNumber:1,
+      pageSize:10,
+      minAge:18,
+      maxAge:100,
+      gender:'male',
+      orderBy:''
+    };
+    if(pageNumber){
+      params.pageNumber=pageNumber;
+    }
+    if(pageSize){
+      params.pageSize = pageSize;
+    }
+    return params;
   }
 }
