@@ -1,16 +1,18 @@
-import { NgIf } from '@angular/common';
+import { DatePipe, NgIf } from '@angular/common';
 import { Component, inject, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Member } from '../../models/member';
 import { MembersService } from '../../services/members.service';
 import { TabsModule } from 'ngx-bootstrap/tabs';
+import { TimeagoModule, TimeagoPipe } from 'ngx-timeago';
+import { Photo } from '../../models/photo';
 
 
 
 @Component({
   selector: 'app-member-detail',
   standalone: true,
-  imports: [NgIf, TabsModule],
+  imports: [NgIf, TabsModule,TimeagoModule, DatePipe],
   templateUrl: './member-detail.component.html',
   styleUrl: './member-detail.component.css',
 })
@@ -39,7 +41,7 @@ export class MemberDetailComponent implements OnInit {
     this.memberService.getMember(username).subscribe({
       next: (member) => {
         this.member = member;
-        this.images = member.photos.map(photo=>{
+        this.images = member.photos.map((photo:Photo)=>{
           return photo.url;
         })
       },

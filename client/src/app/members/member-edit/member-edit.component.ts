@@ -1,7 +1,8 @@
-import { NgFor, NgIf } from '@angular/common';
+import { DatePipe, NgFor, NgIf } from '@angular/common';
 import { Component, HostListener, inject, OnInit, ViewChild } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { TabsModule } from 'ngx-bootstrap/tabs';
+import { TimeagoModule } from 'ngx-timeago';
 import { ToastrService } from 'ngx-toastr';
 import { Member } from '../../models/member';
 import { AccountService } from '../../services/account.service';
@@ -13,7 +14,7 @@ import { PhotoEditorComponent } from "../photo-editor/photo-editor.component";
     standalone: true,
     templateUrl: './member-edit.component.html',
     styleUrl: './member-edit.component.css',
-    imports: [FormsModule, NgIf, TabsModule, PhotoEditorComponent]
+    imports: [FormsModule, NgIf, TabsModule, PhotoEditorComponent,DatePipe,TimeagoModule]
 })
 export class MemberEditComponent implements OnInit {
   @ViewChild('editForm') editForm?: NgForm;
