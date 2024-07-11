@@ -10,9 +10,16 @@ namespace API.Extensions
     {
         public static string GetUsername(this ClaimsPrincipal user)
         {
-            var username = user.FindFirstValue(ClaimTypes.NameIdentifier);
-            if(username == null) throw new Exception("cannot get username from token");
+            var username = user.FindFirstValue(ClaimTypes.Name);
+            if (username == null) throw new Exception("cannot get username from token");
             return username;
+        }
+
+        public static int GetUserId(this ClaimsPrincipal user)
+        {
+            var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) throw new Exception("cannot get userid from token");
+            return int.Parse(userId);
         }
     }
 }
