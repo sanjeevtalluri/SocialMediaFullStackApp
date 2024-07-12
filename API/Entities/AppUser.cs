@@ -25,6 +25,8 @@ namespace API.Entities
         public required string City { get; set; }
         public required string Country { get; set; }
         public ICollection<Photo> Photos { get; set; } = new List<Photo>();
+        public ICollection<UserLike> LikedByUsers { get; set; } = new List<UserLike>();
+        public ICollection<UserLike> LikedUsers { get; set; } = new List<UserLike>();
 
         // public int GetAge()
         // {

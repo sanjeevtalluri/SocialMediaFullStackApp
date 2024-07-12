@@ -1,0 +1,20 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using API.Dtos;
+using API.Entities;
+
+namespace API.Interfaces
+{
+    public interface ILikesRepository
+    {
+        Task<UserLike?> GetUserLike(int sourceUserId, int targetUserId);
+        Task<IEnumerable<int>> GetCurrentUserLikeIds(int currentUserId);
+        Task<IEnumerable<MemberDto>> GetUserLikes(string predicate,int userId);
+
+        void DeleteLike(UserLike like);
+        void AddLike(UserLike like);
+        Task<bool> SaveChanges();
+    }
+}
