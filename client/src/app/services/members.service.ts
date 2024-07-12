@@ -11,6 +11,7 @@ import { Member } from '../models/member';
 import { PaginatedResult } from '../models/pagination';
 import { UserParams } from '../models/userParams';
 import { AccountService } from './account.service';
+import { getPaginationHeaders, paginatedResponse } from './PaginationHelper';
 
 @Injectable({
   providedIn: 'root',
@@ -31,9 +32,9 @@ export class MembersService {
     var userParams = this.userParams();
     var response = this.memberCache.get(Object.values(userParams).join('-'));
     if (response) {
-      return this.paginatedResponse(response);
+      return paginatedResponse(response,this.paginatedResult);
     }
-    let params = this.getPaginationHeaders(
+    let params = getPaginationHeaders(
       userParams.pageNumber,
       userParams.pageSize
     );
@@ -48,19 +49,11 @@ export class MembersService {
       })
       .subscribe({
         next: (response) => {
-          this.paginatedResponse(response);
+          paginatedResponse(response,this.paginatedResult);
           this.memberCache.set(Object.values(userParams).join('-'), response);
         },
       });
   }
-
-  private paginatedResponse(response: HttpResponse<Member[]>) {
-    this.paginatedResult.set({
-      items: response.body as Member[],
-      pagination: JSON.parse(response.headers.get('Pagination')!),
-    });
-  }
-
   getMember(username: string) {
     const member : Member = [...this.memberCache.values()]
       .reduce((arr, elem) => arr.concat(elem.body), [])
@@ -90,23 +83,5 @@ export class MembersService {
 
   deletePhoto(photoId: number) {
     return this.http.delete(this.baseUrl + 'users/delete-photo/' + photoId);
-  }
-
-  private getPaginationHeaders(pageNumber: number, pageSize: number) {
-    let params = {
-      pageNumber: 1,
-      pageSize: 10,
-      minAge: 18,
-      maxAge: 100,
-      gender: 'male',
-      orderBy: '',
-    };
-    if (pageNumber) {
-      params.pageNumber = pageNumber;
-    }
-    if (pageSize) {
-      params.pageSize = pageSize;
-    }
-    return params;
   }
 }
