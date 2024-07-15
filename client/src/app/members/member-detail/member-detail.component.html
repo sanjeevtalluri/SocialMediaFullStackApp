@@ -1,4 +1,4 @@
-<div class="row" *ngIf="member">
+<div class="row">
     <div class="col-4">
         <div class="card">
             <img src="{{member.photoUrl || './assets/user.png'}}" alt="{{member.knownAs}}"
@@ -50,7 +50,7 @@
                 </div>
             </tab>
             <tab heading='Messages' (selectTab)="onTabActivated($event)">
-                <app-member-messages [username]="member.username" [messages]="messages"></app-member-messages>
+                <app-member-messages (updateMessages)="onUpdateMessages($event)" [username]="member.username" [messages]="messages"></app-member-messages>
             </tab>
         </tabset>
     </div>

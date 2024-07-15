@@ -10,6 +10,7 @@ import { MemberDetailComponent } from './members/member-detail/member-detail.com
 import { MemberEditComponent } from './members/member-edit/member-edit.component';
 import { MemberListComponent } from './members/member-list/member-list.component';
 import { MessagesComponent } from './messages/messages.component';
+import { memberDetailResolver } from './resolvers/member-detail.resolver';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -35,7 +36,7 @@ export const routes: Routes = [
         component: MemberListComponent,
         canActivate: [authGuard],
       },
-      { path: 'members/:username', component: MemberDetailComponent },
+      { path: 'members/:username', component: MemberDetailComponent , resolve:{member:memberDetailResolver} },
       {
         path: 'member/edit',
         component: MemberEditComponent,

@@ -1,5 +1,5 @@
 import { DatePipe, NgIf } from '@angular/common';
-import { Component, inject, Input, OnInit, ViewChild, viewChild } from '@angular/core';
+import { AfterViewInit, Component, inject, Input, OnInit, ViewChild, viewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Member } from '../../models/member';
 import { MembersService } from '../../services/members.service';
@@ -20,18 +20,24 @@ import { MessageService } from '../../services/message.service';
     imports: [NgIf, TabsModule, TimeagoModule, DatePipe, MemberMessagesComponent]
 })
 export class MemberDetailComponent implements OnInit {
-  @ViewChild('memberTabs') memberTabs?: TabsetComponent;
+  @ViewChild('memberTabs',{static:true}) memberTabs?: TabsetComponent;
   private messageService = inject(MessageService);
   activeTab?:TabDirective;
   messages:Message[] = [];
   private memberService = inject(MembersService);
   private route = inject(ActivatedRoute);
-  member?: Member;
+  member: Member = {} as Member;
   images: string[] = [];
   currentIndex = 0;
 
   ngOnInit(): void {
-    this.loadMember();
+    this.route.data.subscribe(data => {
+      this.member = data['member'];
+      if(this.member)
+      this.images = this.member.photos.map((photo:Photo)=>{
+        return photo.url;
+      })
+    })
 
     this.route.queryParams.subscribe({
       next:params=>{
@@ -47,20 +53,20 @@ export class MemberDetailComponent implements OnInit {
   prevSlide() {
     this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length;
   }
-  loadMember() {
-    const username = this.route.snapshot.paramMap.get('username');
-    if (!username) {
-      return;
-    }
-    this.memberService.getMember(username).subscribe({
-      next: (member) => {
-        this.member = member;
-        this.images = member.photos.map((photo:Photo)=>{
-          return photo.url;
-        })
-      },
-    });
-  }
+  // loadMember() {
+  //   const username = this.route.snapshot.paramMap.get('username');
+  //   if (!username) {
+  //     return;
+  //   }
+  //   this.memberService.getMember(username).subscribe({
+  //     next: (member) => {
+  //       this.member = member;
+  //       this.images = member.photos.map((photo:Photo)=>{
+  //         return photo.url;
+  //       })
+  //     },
+  //   });
+  // }
 
   loadGalleryDetails() {
   }
@@ -80,5 +86,9 @@ export class MemberDetailComponent implements OnInit {
       const messageTab = this.memberTabs.tabs.find(x=>x.heading == heading);
       if(messageTab) messageTab.active = true;
     }
+  }
+
+  onUpdateMessages(event:Message){
+    this.messages.push(event);
   }
 }
