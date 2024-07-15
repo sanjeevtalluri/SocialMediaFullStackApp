@@ -9,6 +9,7 @@ import { Photo } from '../../models/photo';
 import { MemberMessagesComponent } from "../member-messages/member-messages.component";
 import { Message } from '../../models/Message';
 import { MessageService } from '../../services/message.service';
+import { PresenceService } from '../../services/presence.service';
 
 
 
@@ -24,7 +25,7 @@ export class MemberDetailComponent implements OnInit {
   private messageService = inject(MessageService);
   activeTab?:TabDirective;
   messages:Message[] = [];
-  private memberService = inject(MembersService);
+  presenceService = inject(PresenceService);
   private route = inject(ActivatedRoute);
   member: Member = {} as Member;
   images: string[] = [];

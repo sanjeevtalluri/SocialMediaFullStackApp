@@ -4,6 +4,7 @@ import { Component, computed, inject, input, Input, OnInit } from '@angular/core
 import { RouterLink} from '@angular/router';
 import { Member } from '../../models/member';
 import { LikesService } from '../../services/likes.service';
+import { PresenceService } from '../../services/presence.service';
 
 @Component({
   selector: 'app-member-card',
@@ -15,6 +16,10 @@ import { LikesService } from '../../services/likes.service';
 export class MemberCardComponent{
   member = input.required<Member>();
   private likesService = inject(LikesService);
+  private presenceService = inject(PresenceService);
+  isOnline = computed(()=>{
+    return this.presenceService.onlineUsers().includes(this.member().username);
+  })
   hasLiked = computed(()=>this.likesService.likeIds().includes(this.member().id));
   constructor(){
 
