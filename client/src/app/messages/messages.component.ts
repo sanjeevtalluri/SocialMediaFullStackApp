@@ -36,8 +36,15 @@ export class MessagesComponent implements OnInit {
     }
   }
 
-  deleteMessage(id:number){
-
+  deleteMessage(id: number) {
+    this.messageService.deleteMessage(id).subscribe(() => {
+      this.messageService.paginatedResult.update(prev=>{
+        if(prev?.items){
+          prev.items.splice(prev.items.findIndex(m => m.id === id), 1);
+        }
+        return prev;
+      })
+    })
   }
 
   getRoute(message:Message){
