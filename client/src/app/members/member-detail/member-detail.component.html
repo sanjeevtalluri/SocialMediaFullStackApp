@@ -24,15 +24,15 @@
             <div class="card-footer">
                 <div class="btn-group d-flex">
                     <button class="btn btn-primary">Like</button>
-                    <button class="btn btn-success">Message</button>
+                    <button (click)="selectedTab('Messages')" class="btn btn-success">Message</button>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="col-8">
-        <tabset class="member-tabset">
-            <tab heading='About {{member.knownAs}}'>
+        <tabset class="member-tabset" #memberTabs>
+            <tab heading='About {{member.knownAs}}' (selectTab)="onTabActivated($event)">
                 <h4>Description</h4>
                 <p>{{member.introduction}}</p>
                 <h4>Looking for</h4>
@@ -42,15 +42,15 @@
                 <h4>Interests</h4>
                 <p>{{member.interests}}</p>
             </tab>
-            <tab heading='Photos'>
+            <tab heading='Photos' (selectTab)="onTabActivated($event)">
                 <div class="slider-container">
                     <button class="nav-btn" (click)="prevSlide()">&#10094;</button>
                     <img [src]="images[currentIndex]" class="slide-image" alt="Image Slide">
                     <button class="nav-btn" (click)="nextSlide()">&#10095;</button>
                 </div>
             </tab>
-            <tab heading='Messages'>
-                <p>Messages will go here</p>
+            <tab heading='Messages' (selectTab)="onTabActivated($event)">
+                <app-member-messages [username]="member.username" [messages]="messages"></app-member-messages>
             </tab>
         </tabset>
     </div>

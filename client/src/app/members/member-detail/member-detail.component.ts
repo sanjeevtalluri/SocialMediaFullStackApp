@@ -1,30 +1,44 @@
 import { DatePipe, NgIf } from '@angular/common';
-import { Component, inject, Input, OnInit } from '@angular/core';
+import { Component, inject, Input, OnInit, ViewChild, viewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Member } from '../../models/member';
 import { MembersService } from '../../services/members.service';
-import { TabsModule } from 'ngx-bootstrap/tabs';
+import { TabDirective, TabsetComponent, TabsModule } from 'ngx-bootstrap/tabs';
 import { TimeagoModule, TimeagoPipe } from 'ngx-timeago';
 import { Photo } from '../../models/photo';
+import { MemberMessagesComponent } from "../member-messages/member-messages.component";
+import { Message } from '../../models/Message';
+import { MessageService } from '../../services/message.service';
 
 
 
 @Component({
-  selector: 'app-member-detail',
-  standalone: true,
-  imports: [NgIf, TabsModule,TimeagoModule, DatePipe],
-  templateUrl: './member-detail.component.html',
-  styleUrl: './member-detail.component.css',
+    selector: 'app-member-detail',
+    standalone: true,
+    templateUrl: './member-detail.component.html',
+    styleUrl: './member-detail.component.css',
+    imports: [NgIf, TabsModule, TimeagoModule, DatePipe, MemberMessagesComponent]
 })
 export class MemberDetailComponent implements OnInit {
-  ngOnInit(): void {
-    this.loadMember();
-  }
+  @ViewChild('memberTabs') memberTabs?: TabsetComponent;
+  private messageService = inject(MessageService);
+  activeTab?:TabDirective;
+  messages:Message[] = [];
   private memberService = inject(MembersService);
   private route = inject(ActivatedRoute);
   member?: Member;
   images: string[] = [];
   currentIndex = 0;
+
+  ngOnInit(): void {
+    this.loadMember();
+
+    this.route.queryParams.subscribe({
+      next:params=>{
+        params['tab'] && this.selectedTab(params['tab']);
+      }
+    })
+  }
 
   nextSlide() {
     this.currentIndex = (this.currentIndex + 1) % this.images.length;
@@ -49,5 +63,22 @@ export class MemberDetailComponent implements OnInit {
   }
 
   loadGalleryDetails() {
+  }
+
+  onTabActivated(data: TabDirective) {
+    this.activeTab = data;
+    if (this.activeTab.heading === 'Messages' && this.messages.length === 0 && this.member) {
+      this.messageService.getMessageThread(this.member.username).subscribe({
+        next:(response)=>{
+          this.messages = response;
+        }
+      })
+    }
+  }
+  selectedTab(heading:string){
+    if(this.memberTabs){
+      const messageTab = this.memberTabs.tabs.find(x=>x.heading == heading);
+      if(messageTab) messageTab.active = true;
+    }
   }
 }

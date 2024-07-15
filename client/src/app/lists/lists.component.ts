@@ -1,5 +1,5 @@
 import { NgFor, NgIf } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonsModule } from 'ngx-bootstrap/buttons';
 import { Member } from '../models/member';
@@ -14,7 +14,10 @@ import { PaginationModule } from 'ngx-bootstrap/pagination';
     styleUrl: './lists.component.css',
     imports: [FormsModule, ButtonsModule, NgFor, MemberCardComponent,PaginationModule,NgIf]
 })
-export class ListsComponent implements OnInit {
+export class ListsComponent implements OnInit, OnDestroy {
+  ngOnDestroy(): void {
+    this.likesService.paginatedResult.set(null);
+  }
   ngOnInit(): void {
     this.loadLikes();
   }
