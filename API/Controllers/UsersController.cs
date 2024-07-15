@@ -51,13 +51,12 @@ namespace API.Controllers
         [HttpPut]
         public async Task<ActionResult> UpdateUser(MemberUpdateDto memberUpdateDto)
         {
-            var username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var user = await userRepository.GetUserByUsernameAsync(username!);
+            var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
             if (user == null) BadRequest("Failed to update user");
-
             mapper.Map(memberUpdateDto, user);
-
-            userRepository.Update(user!);
+            if (user == null) BadRequest("Failed to update user");
+            if(user!=null)
+            userRepository.Update(user);
 
             if (await userRepository.SaveAllAsync()) return NoContent();
 
