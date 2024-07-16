@@ -4,7 +4,8 @@
             No messages yet... say hi by using the message box below
         </div>
 
-        <ul *ngIf="messageService.messageThread()?.length! > 0" class="chat">
+        <ul *ngIf="messageService.messageThread()?.length! > 0" class="chat" #scrollme
+             style="overflow: scroll; height: 500px; scroll-behavior: smooth; ">
             <li *ngFor="let message of messageService.messageThread()">
                 <div>
                     <span class="chat-img float-end">
