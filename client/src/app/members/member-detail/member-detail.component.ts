@@ -1,6 +1,6 @@
 import { DatePipe, NgIf } from '@angular/common';
-import { AfterViewInit, Component, inject, Input, OnInit, ViewChild, viewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { AfterViewInit, Component, inject, Input, OnDestroy, OnInit, ViewChild, viewChild } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Member } from '../../models/member';
 import { MembersService } from '../../services/members.service';
 import { TabDirective, TabsetComponent, TabsModule } from 'ngx-bootstrap/tabs';
@@ -10,6 +10,8 @@ import { MemberMessagesComponent } from "../member-messages/member-messages.comp
 import { Message } from '../../models/Message';
 import { MessageService } from '../../services/message.service';
 import { PresenceService } from '../../services/presence.service';
+import { AccountService } from '../../services/account.service';
+import { HubConnection, HubConnectionState } from '@microsoft/signalr';
 
 
 
@@ -20,13 +22,15 @@ import { PresenceService } from '../../services/presence.service';
     styleUrl: './member-detail.component.css',
     imports: [NgIf, TabsModule, TimeagoModule, DatePipe, MemberMessagesComponent]
 })
-export class MemberDetailComponent implements OnInit {
+export class MemberDetailComponent implements OnInit, OnDestroy {
+
   @ViewChild('memberTabs',{static:true}) memberTabs?: TabsetComponent;
   private messageService = inject(MessageService);
+  private accountService = inject(AccountService);
   activeTab?:TabDirective;
-  messages:Message[] = [];
   presenceService = inject(PresenceService);
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   member: Member = {} as Member;
   images: string[] = [];
   currentIndex = 0;
@@ -45,6 +49,11 @@ export class MemberDetailComponent implements OnInit {
         params['tab'] && this.selectedTab(params['tab']);
       }
     })
+    this.route.paramMap.subscribe({
+      next:()=>{
+        this.onRouteParamsChange();
+      }
+    })
   }
 
   nextSlide() {
@@ -54,31 +63,36 @@ export class MemberDetailComponent implements OnInit {
   prevSlide() {
     this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length;
   }
-  // loadMember() {
-  //   const username = this.route.snapshot.paramMap.get('username');
-  //   if (!username) {
-  //     return;
-  //   }
-  //   this.memberService.getMember(username).subscribe({
-  //     next: (member) => {
-  //       this.member = member;
-  //       this.images = member.photos.map((photo:Photo)=>{
-  //         return photo.url;
-  //       })
-  //     },
-  //   });
-  // }
+  ngOnDestroy(): void {
+    this.messageService.stopHubConnection();
+  }
 
   loadGalleryDetails() {
   }
 
   onTabActivated(data: TabDirective) {
     this.activeTab = data;
-    if (this.activeTab.heading === 'Messages' && this.messages.length === 0 && this.member) {
-      this.messageService.getMessageThread(this.member.username).subscribe({
-        next:(response)=>{
-          this.messages = response;
-        }
+    this.router.navigate([],{
+      relativeTo:this.route,
+      queryParams:{tab:this.activeTab.heading},
+      queryParamsHandling:'merge'
+    })
+    if (this.activeTab.heading === 'Messages' && this.member) {
+      const user = this.accountService.currentUser();
+      if(!user) return;
+      this.messageService.createHubConnection(user,this.member.username);
+    }
+    else{
+      this.messageService.stopHubConnection();
+    }
+  }
+
+  onRouteParamsChange(){
+    const user = this.accountService.currentUser();
+    if(!user) return;
+    if(this.messageService.hubConnection?.state == HubConnectionState.Connected && this.activeTab?.heading=="Messages"){
+      this.messageService.hubConnection.stop().then(()=>{
+        this.messageService.createHubConnection(user,this.member.username);
       })
     }
   }
@@ -89,7 +103,4 @@ export class MemberDetailComponent implements OnInit {
     }
   }
 
-  onUpdateMessages(event:Message){
-    this.messages.push(event);
-  }
 }
